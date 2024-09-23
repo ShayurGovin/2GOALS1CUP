@@ -1,6 +1,12 @@
+# The Implementation of the Hungarian class below is its own personalised implementation but a few online resources helped in deriving it:
+# https://github.com/Ibrahim5aad/kuhn-munkres-algorithm/blob/master/hungarian_method.py
+# https://github.com/tdedecko/hungarian-algorithm/blob/master/hungarian.py
+# https://plainenglish.io/blog/hungarian-algorithm-introduction-python-implementation-93e7c0890e15
+
+
 import numpy as np
 
-class Munkres:
+class Hungarian:
     def __init__(self):
         self.C = None
         self.row_covered = None
@@ -184,8 +190,8 @@ def role_assignment(teammate_positions, formation_positions):
 
     cost_matrix = np.linalg.norm(teammates[:, np.newaxis] - formations, axis=2)
 
-    m = Munkres()
-    indexes = m.compute(cost_matrix)
+    Hung = Hungarian()
+    indexes = Hung.compute(cost_matrix)
 
     point_preferences = {i + 1: formations[j] for i, j in indexes}
 
