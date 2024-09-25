@@ -1,23 +1,32 @@
+# The Implementation of the Hungarian class below is its own personalised implementation but a few online resources helped in deriving it:
+# https://github.com/Ibrahim5aad/kuhn-munkres-algorithm/blob/master/hungarian_method.py
+# https://github.com/tdedecko/hungarian-algorithm/blob/master/hungarian.py
+# https://plainenglish.io/blog/hungarian-algorithm-introduction-python-implementation-93e7c0890e15
+
 import numpy as np
 
-class Munkres:
+class Hungarian:
+    #  Implementation of the Hungarian algorithm (also known as the Munkres algorithm)
     def __init__(self):
-        self.C = None
-        self.row_covered = None
-        self.col_covered = None
-        self.n = None
-        self.Z0_r = None
-        self.Z0_c = None
-        self.marked = None
-        self.path = None
+        # Initialize variables used throughout the algorithm
+        self.C = None  # Cost matrix
+        self.row_covered = None  # Boolean array to track covered rows
+        self.col_covered = None  # Boolean array to track covered columns
+        self.n = None  # Size of the square matrix
+        self.Z0_r = None  # Temporary storage for row index
+        self.Z0_c = None  # Temporary storage for column index
+        self.marked = None  # Matrix to mark zeros
+        self.path = None  # Path of alternating zeros
 
     def pad_matrix(self, matrix):
+        # Pad the input matrix with zeros to make it square if necessary.
         max_columns = max(matrix.shape[1], matrix.shape[0])
         new_matrix = np.zeros((max_columns, max_columns))
         new_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
         return new_matrix
 
     def compute(self, cost_matrix):
+        # Initialize the algorithm with the given cost matrix
         self.C = self.pad_matrix(np.copy(cost_matrix))
         self.n = self.C.shape[0]
         self.original_c = np.copy(self.C)
@@ -31,6 +40,7 @@ class Munkres:
         done = False
         step = 1
 
+        # Define the steps of the algorithm
         steps = { 1 : self.step1,
                   2 : self.step2,
                   3 : self.step3,
@@ -38,6 +48,7 @@ class Munkres:
                   5 : self.step5,
                   6 : self.step6 }
 
+        # Main loop of the algorithm
         while not done:
             try:
                 func = steps[step]
@@ -136,6 +147,7 @@ class Munkres:
         return 7
 
     def find_a_zero(self):
+        # Find the first uncovered element with value 0
         for i in range(self.n):
             for j in range(self.n):
                 if self.C[i][j] == 0 and not self.row_covered[i] and not self.col_covered[j]:
@@ -149,12 +161,14 @@ class Munkres:
         return -1
 
     def find_star_in_col(self, col):
+        # Find the first starred element in the specified column
         for i in range(self.n):
             if self.marked[i][col] == 1:
                 return i
         return -1
 
     def find_prime_in_row(self, row):
+        # Find the first prime element in the specified row
         for j in range(self.n):
             if self.marked[row][j] == 2:
                 return j
@@ -168,25 +182,30 @@ class Munkres:
                 self.marked[path[i][0]][path[i][1]] = 1
 
     def clear_covers(self):
+        # Clear all covered matrix cells
         self.row_covered[:] = False
         self.col_covered[:] = False
 
     def erase_primes(self):
+        # Erase all prime markings
         for i in range(self.n):
             for j in range(self.n):
                 if self.marked[i][j] == 2:
                     self.marked[i][j] = 0
 
 def role_assignment(teammate_positions, formation_positions):
-
+    # Assign roles to teammates based on their positions and desired formation positions.
     teammates = np.array(teammate_positions)
     formations = np.array(formation_positions)
 
+    # Calculate the cost matrix based on Euclidean distances
     cost_matrix = np.linalg.norm(teammates[:, np.newaxis] - formations, axis=2)
 
-    m = Munkres()
-    indexes = m.compute(cost_matrix)
+    # Use the Hungarian algorithm to find the optimal assignment
+    Hung = Hungarian()
+    indexes = Hung.compute(cost_matrix)
 
+    # Create a dictionary of assignments
     point_preferences = {i + 1: formations[j] for i, j in indexes}
 
     return point_preferences

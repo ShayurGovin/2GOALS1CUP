@@ -1,3 +1,8 @@
+# The Implementation of the Hungarian class below is its own personalised implementation but a few online resources helped in deriving it:
+# https://github.com/Ibrahim5aad/kuhn-munkres-algorithm/blob/master/hungarian_method.py
+# https://github.com/tdedecko/hungarian-algorithm/blob/master/hungarian.py
+# https://plainenglish.io/blog/hungarian-algorithm-introduction-python-implementation-93e7c0890e15
+
 import numpy as np
 
 class Hungarian:
@@ -207,12 +212,16 @@ def role_assignment(teammate_positions, formation_positions):
 
 
 def pass_reciever_selector(player_unum, teammate_positions, final_target):
-    # Calculate the uniform number of the pass receiver
-    pass_reciever_unum = player_unum + 1
-    # If the calculated receiver number is not 12, select the corresponding teammate
-    # Otherwise, use the final target position
+    
+    # Input : Locations of all teammates and a final target you wish the ball to finish at
+    # Output : Target Location in 2d of the player who is recieveing the ball
+    #-----------------------------------------------------------#
+
+    # Example
+    pass_reciever_unum = player_unum + 1                  #This starts indexing at 1, therefore player 1 wants to pass to player 2
+    
     if pass_reciever_unum != 12:
-        target = teammate_positions[pass_reciever_unum-1]  # Adjust for 0-based indexing
+        target = teammate_positions[pass_reciever_unum-1] #This is 0 indexed so we actually need to minus 1 
     else:
         target = final_target 
     
